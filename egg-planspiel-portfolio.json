@@ -1,0 +1,102 @@
+{
+  "_comment": "Build GHCR image via included GitHub Actions first; configure HTTPS/VPN before entering secrets over browser.",
+  "meta": {
+    "version": "PTDL_v2",
+    "update_url": null
+  },
+  "exported_at": "2026-11-23T09:54:06.645155+00:00",
+  "name": "Planspiel Börse Portfolio Webserver (15m)",
+  "author": "admin@localhost",
+  "description": "Portfolio OHLC Webserver for Pterodactyl, with automatic Planspiel Boerse login and SQLite. Requires custom GHCR image.",
+  "features": null,
+  "docker_images": {
+    "Portfolio Webserver": "ghcr.io/playerlats9712/planspiel-portfolio:latest"
+  },
+  "file_denylist": [],
+  "startup": "python -u /opt/portfolio/app.py",
+  "config": {
+    "files": "{}",
+    "startup": "{\"done\": \"Running on\"}",
+    "logs": "{}",
+    "stop": "^^C"
+  },
+  "scripts": {
+    "installation": {
+      "script": "#!/bin/sh\nset -eu\nmkdir -p /mnt/server/data\necho \"Portfolio app is included inside the Docker image\"\n",
+      "container": "ghcr.io/pterodactyl/installers:alpine",
+      "entrypoint": "sh"
+    }
+  },
+  "variables": [
+    {
+      "name": "Planspiel E-Mail",
+      "description": "E-Mail für die Anmeldung bei Planspiel Börse",
+      "env_variable": "PLANSPIEL_EMAIL",
+      "default_value": "",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string|min:1|max:255",
+      "field_type": "text"
+    },
+    {
+      "name": "Planspiel Passwort",
+      "description": "Passwort für Planspiel Börse. Niemals in GitHub eintragen.",
+      "env_variable": "PLANSPIEL_PASSWORD",
+      "default_value": "",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string|min:12|max:255",
+      "field_type": "text"
+    },
+    {
+      "name": "Depot-ID",
+      "description": "ID des Depots aus der Netzwerkanfrage",
+      "env_variable": "PLANSPIEL_DEPOT_ID",
+      "default_value": "872075",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|numeric",
+      "field_type": "text"
+    },
+    {
+      "name": "Web Benutzer",
+      "description": "Benutzername für die geschützte Webansicht",
+      "env_variable": "WEB_USER",
+      "default_value": "portfolio",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string|min:1|max:255",
+      "field_type": "text"
+    },
+    {
+      "name": "Web Passwort",
+      "description": "Separates starkes Passwort für die Webansicht. Nur mit HTTPS/VPN verwenden.",
+      "env_variable": "WEB_PASSWORD",
+      "default_value": "",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string|min:12|max:255",
+      "field_type": "text"
+    },
+    {
+      "name": "API Auth Methode",
+      "description": "bearer | x-bywo-jen | none (falls Authentifizierung abweicht)",
+      "env_variable": "API_AUTH_MODE",
+      "default_value": "bearer",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string|in:bearer,x-bywo-jen,none",
+      "field_type": "text"
+    },
+    {
+      "name": "Abfrageintervall",
+      "description": "Sekunden zwischen Messungen; mindestens 30",
+      "env_variable": "POLL_SECONDS",
+      "default_value": "60",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|integer|min:30|max:3600",
+      "field_type": "text"
+    }
+  ]
+}
